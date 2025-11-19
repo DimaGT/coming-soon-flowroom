@@ -233,7 +233,7 @@ export default function Home() {
               placeholder='Enter your email'
               required
               disabled={isSubmitting}
-              className={`px-4 py-2.5 bg-black/80 border-2 text-[#ffda17] placeholder-yellow-300/50 
+              className={`px-4 py-2.5 bg-black/80 border-2 text-[#fdfbb4] placeholder-[#fdfbb4] 
                 focus:outline-none focus:ring-2 focus:ring-[#ffda17] focus:ring-opacity-50
                 transition-all duration-300 ease-in-out
                 min-w-[250px] sm:min-w-[300px]
