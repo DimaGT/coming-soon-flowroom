@@ -138,7 +138,7 @@ export default function Home() {
       <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-52  mb-24 md:mb-0'>
         <div className='mb-8 flex flex-col items-center'>
           <span className='text-yellow-300 text-5xl font-bold tracking-wide drop-shadow-lg uppercase'>
-            Coming Soon
+          FLOWROOM
           </span>
         </div>
         {/* Gallery */}
