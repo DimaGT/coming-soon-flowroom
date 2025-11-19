@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import SplashCursor from '../components/SplashCursor';
 import { supabase } from '../lib/supabase/client';
 
@@ -53,7 +54,6 @@ export default function Home() {
   const [lastActiveText, setLastActiveText] = useState<string>('A new way to see learning.');
   const [email, setEmail] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   // Update last active text when activeItem changes
   useEffect(() => {
@@ -67,12 +67,11 @@ export default function Home() {
     e.preventDefault();
 
     if (!email || !email.includes('@')) {
-      setSubmitStatus('error');
+      toast.error('Please enter a valid email address');
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitStatus('idle');
 
     try {
       const { error } = await supabase
@@ -82,17 +81,19 @@ export default function Home() {
       if (error) {
         // If error is due to duplicate email, treat as success
         if (error.code === '23505') {
-          setSubmitStatus('success');
+          toast.success(
+            'You are already subscribed! We will notify you when the next session begins.'
+          );
           setEmail('');
         } else {
-          setSubmitStatus('error');
+          toast.error('Something went wrong. Please try again later.');
         }
       } else {
-        setSubmitStatus('success');
+        toast.success('Thank you! We will notify you when the next flow session begins.');
         setEmail('');
       }
     } catch (err) {
-      setSubmitStatus('error');
+      toast.error('Something went wrong. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -109,7 +110,7 @@ export default function Home() {
       <div className='absolute inset-0 z-10 flex items-center justify-center'>
         <div className='relative w-full h-full max-w-7xl mx-auto'>
           {/* Roof image at the top */}
-          <div className='absolute left-1/2 -translate-x-1/2 w-full max-w-[160px] h-1/2'>
+          <div className='absolute left-1/2 -translate-x-1/2 w-full md:max-w-[160px] max-w-[120px] h-1/2'>
             <Image
               src='/images/window.png'
               alt='Roof'
@@ -120,19 +121,21 @@ export default function Home() {
           </div>
         </div>
         {/* City image at the bottom - full width */}
-        <div className='absolute bottom-[-5vh] left-0 right-0 w-screen h-1/2'>
-          <Image
-            src='/images/city.png'
-            alt='City'
-            fill
-            className='object-contain object-bottom'
-            priority
-          />
+        <div className='absolute md:bottom-[-5vh] bottom-0 left-0 right-0 w-screen h-1/2'>
+          <div className='relative h-full w-[150vw] left-1/2 -translate-x-1/2 md:w-full md:left-0 md:translate-x-0'>
+            <Image
+              src='/images/city.png'
+              alt='City'
+              fill
+              className='object-contain object-bottom'
+              priority
+            />
+          </div>
         </div>
       </div>
 
       {/* Content block centered */}
-      <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-52'>
+      <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-52  mb-24 md:mb-0'>
         <div className='mb-8 flex flex-col items-center'>
           <span className='text-yellow-300 text-5xl font-bold tracking-wide drop-shadow-lg uppercase'>
             Coming Soon
@@ -146,7 +149,9 @@ export default function Home() {
             return (
               <div
                 key={item.id}
-                className='relative flex flex-col items-center transition-all duration-300 cursor-pointer'
+                className={`relative flex flex-col items-center transition-all duration-300 cursor-pointer ${
+                  item.id === 7 || item.id === 8 ? 'hidden sm:flex' : ''
+                }`}
                 onMouseEnter={() => setActiveItem(item.id)}
               >
                 {/* Image container */}
@@ -180,8 +185,16 @@ export default function Home() {
                         isActive ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
-                      <span className='text-yellow-300  font-semibold drop-shadow-lg'>
-                        {item.text}
+                      <span className='text-[#fdfbb4] font-semibold uppercase italic drop-shadow-lg text-center block leading-tight whitespace-pre-line text-2xl'>
+                        {item.text
+                          .split(' ')
+                          .slice(0, Math.ceil(item.text.split(' ').length / 2))
+                          .join(' ')}
+                        <br />
+                        {item.text
+                          .split(' ')
+                          .slice(Math.ceil(item.text.split(' ').length / 2))
+                          .join(' ')}
                       </span>
                     </div>
                   )}
@@ -244,16 +257,6 @@ export default function Home() {
               {isSubmitting ? 'Submitting...' : 'Notify Me'}
             </button>
           </form>
-          {submitStatus === 'success' && (
-            <p className='text-green-400 text-sm mt-2 transition-opacity duration-300 animate-in fade-in'>
-              Thank you! We'll notify you when the next session begins.
-            </p>
-          )}
-          {submitStatus === 'error' && (
-            <p className='text-red-400 text-sm mt-2 transition-opacity duration-300 animate-in fade-in'>
-              Something went wrong. Please try again.
-            </p>
-          )}
         </div>
       </div>
     </div>
