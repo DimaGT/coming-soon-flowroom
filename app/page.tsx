@@ -135,10 +135,13 @@ export default function Home() {
       </div>
 
       {/* Content block centered */}
-      <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-52  mb-24 md:mb-0'>
-        <div className='mb-8 flex flex-col items-center'>
+      <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-46  mb-24 md:mb-0'>
+        <div className='mb-5 flex flex-col items-center'>
           <span className='text-yellow-300 text-5xl font-bold tracking-wide drop-shadow-lg uppercase'>
           FLOWROOM
+          </span>
+          <span className='text-[#fdfbb4] text-xl font-bold tracking-wide drop-shadow-lg uppercase'>COMING SOON
+
           </span>
         </div>
         {/* Gallery */}
