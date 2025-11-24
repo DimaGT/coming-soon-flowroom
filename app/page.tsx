@@ -75,14 +75,56 @@ export default function Home() {
     document.body.style.transform = '';
     setIsScreenDark(false);
     const mainContent = document.querySelector('.main-content') as HTMLElement;
+    const windowElement = document.querySelector('.window-container') as HTMLElement;
+    const cityElement = document.querySelector('.city-container') as HTMLElement;
+    const galleryElement = document.querySelector('.gallery-container') as HTMLElement;
+    const formElement = document.querySelector('.email-form-container') as HTMLElement;
+    const titleElement = document.querySelector('.title-container') as HTMLElement;
+
     if (mainContent) {
       mainContent.style.transition = 'opacity 0.8s ease-out';
       mainContent.style.opacity = '1';
     }
+    if (windowElement) {
+      windowElement.style.transition = 'transform 0.8s ease-out';
+      windowElement.style.transform = '';
+    }
+    if (cityElement) {
+      cityElement.style.transition = 'transform 0.8s ease-out';
+      cityElement.style.transform = '';
+    }
+    if (galleryElement) {
+      galleryElement.style.transition = 'transform 0.8s ease-out';
+      galleryElement.style.transform = '';
+    }
+    if (formElement) {
+      formElement.style.transition = 'transform 0.8s ease-out';
+      formElement.style.transform = '';
+    }
+    if (titleElement) {
+      titleElement.style.transition = 'transform 0.8s ease-out';
+      titleElement.style.transform = '';
+    }
+
     setTimeout(() => {
       document.body.style.transition = '';
       if (mainContent) {
         mainContent.style.transition = '';
+      }
+      if (windowElement) {
+        windowElement.style.transition = '';
+      }
+      if (cityElement) {
+        cityElement.style.transition = '';
+      }
+      if (galleryElement) {
+        galleryElement.style.transition = '';
+      }
+      if (formElement) {
+        formElement.style.transition = '';
+      }
+      if (titleElement) {
+        titleElement.style.transition = '';
       }
     }, 800);
   };
@@ -93,39 +135,90 @@ export default function Home() {
     document.body.style.transform = '';
     setIsScreenDark(false);
     const mainContent = document.querySelector('.main-content') as HTMLElement;
+    const windowElement = document.querySelector('.window-container') as HTMLElement;
+    const cityElement = document.querySelector('.city-container') as HTMLElement;
+    const galleryElement = document.querySelector('.gallery-container') as HTMLElement;
+    const formElement = document.querySelector('.email-form-container') as HTMLElement;
+    const titleElement = document.querySelector('.title-container') as HTMLElement;
+
     if (mainContent) {
       mainContent.style.transition = 'opacity 0.8s ease-out';
       mainContent.style.opacity = '1';
     }
+    if (windowElement) {
+      windowElement.style.transition = 'transform 0.8s ease-out';
+      windowElement.style.transform = '';
+    }
+    if (cityElement) {
+      cityElement.style.transition = 'transform 0.8s ease-out';
+      cityElement.style.transform = '';
+    }
+    if (galleryElement) {
+      galleryElement.style.transition = 'transform 0.8s ease-out';
+      galleryElement.style.transform = '';
+    }
+    if (formElement) {
+      formElement.style.transition = 'transform 0.8s ease-out';
+      formElement.style.transform = '';
+    }
+    if (titleElement) {
+      titleElement.style.transition = 'transform 0.8s ease-out';
+      titleElement.style.transform = '';
+    }
+
     setTimeout(() => {
       document.body.style.transition = '';
       if (mainContent) {
         mainContent.style.transition = '';
       }
+      if (windowElement) {
+        windowElement.style.transition = '';
+      }
+      if (cityElement) {
+        cityElement.style.transition = '';
+      }
+      if (galleryElement) {
+        galleryElement.style.transition = '';
+      }
+      if (formElement) {
+        formElement.style.transition = '';
+      }
+      if (titleElement) {
+        titleElement.style.transition = '';
+      }
       setIsPageRestored(true);
       // Remove flashing animation from window
-      const windowElement = document.querySelector('.window-flashing');
-      if (windowElement) {
-        windowElement.classList.remove('window-flashing');
+      const flashingWindow = document.querySelector('.window-flashing');
+      if (flashingWindow) {
+        flashingWindow.classList.remove('window-flashing');
       }
     }, 800);
   };
 
-  // Handle window click - shake entire page for 2 seconds
+  // Handle window click - shake entire page with collapse effect
   const handleWindowClick = () => {
     let x = 0;
     const startTime = Date.now();
-    const duration = 3200; // Тривалість трясіння
-    const fadeStartTime = 2000; // Починаємо затемнювати через 2 секунди
+    const duration = 5000; // Збільшена тривалість трясіння
+    const fadeStartTime = 3500; // Починаємо затемнювати через 3.5 секунди
 
     // Додаємо клас для миготіння
     document.body.classList.add('flashing-effect');
 
     const mainContent = document.querySelector('.main-content') as HTMLElement;
+    const windowElement = document.querySelector('.window-container') as HTMLElement;
+    const cityElement = document.querySelector('.city-container') as HTMLElement;
+    const galleryElement = document.querySelector('.gallery-container') as HTMLElement;
+    const formElement = document.querySelector('.email-form-container') as HTMLElement;
+    const titleElement = document.querySelector('.title-container') as HTMLElement;
     let fadeStarted = false;
+
+    // Отримуємо висоту екрану для опускання до низу
+    const screenHeight = window.innerHeight;
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
+      const progress = elapsed / duration; // 0 to 1
 
       // Трясіння
       document.body.style.transform = `translate(${Math.sin(x) * 10}px, ${
@@ -133,13 +226,48 @@ export default function Home() {
       }px) rotate(${Math.sin(x) * 4}deg)`;
       x += 0.35; // пришвидшення
 
+      // Анімація опускання вікон та міста (collapse effect) - повільніше, але до самого низу
+      const collapseProgress = Math.min(1, (elapsed - 1000) / 3500); // Починаємо через 1 секунду, повільніше (3.5 сек)
+      if (collapseProgress > 0) {
+        // Використовуємо ease-out для більш природного падіння
+        const easedProgress = 1 - Math.pow(1 - collapseProgress, 2);
+        // Опускаємо до самого низу екрану
+        const windowOffset = easedProgress * (screenHeight + 200); // За самий низ екрану
+        const cityOffset = easedProgress * (screenHeight * 0.8); // Трохи менше
+        const galleryOffset = easedProgress * (screenHeight * 0.6); // Менше
+        const formOffset = easedProgress * (screenHeight * 0.7); // Форма теж опускається
+        // Збільшуємо scale текстів паралельно з опусканням
+        const titleScale = 1 + easedProgress * 1.5; // Від 1 до 2.5
+
+        if (windowElement) {
+          windowElement.style.transform = `translateY(${windowOffset}px)`;
+          windowElement.style.transition = 'transform 0.1s linear';
+        }
+        if (cityElement) {
+          cityElement.style.transform = `translateY(${cityOffset}px)`;
+          cityElement.style.transition = 'transform 0.1s linear';
+        }
+        if (galleryElement) {
+          galleryElement.style.transform = `translateY(${galleryOffset}px)`;
+          galleryElement.style.transition = 'transform 0.1s linear';
+        }
+        if (formElement) {
+          formElement.style.transform = `translateY(${formOffset}px)`;
+          formElement.style.transition = 'transform 0.1s linear';
+        }
+        if (titleElement) {
+          titleElement.style.transform = `scale(${titleScale})`;
+          titleElement.style.transition = 'transform 0.1s linear';
+        }
+      }
+
       // Починаємо затемнювати після fadeStartTime
       if (elapsed >= fadeStartTime && !fadeStarted) {
         fadeStarted = true;
         setIsScreenDark(true);
         if (mainContent) {
           // Встановлюємо transition один раз
-          mainContent.style.transition = 'opacity 1.2s ease-out';
+          mainContent.style.transition = 'opacity 1.5s ease-out';
           mainContent.style.opacity = '0';
         }
       }
@@ -174,10 +302,10 @@ export default function Home() {
             80% { filter: brightness(0.8); }
           }
           @keyframes window-flashing {
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3)); }
-            25% { filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); }
-            50% { filter: brightness(1.1) drop-shadow(0 0 2px rgba(255, 255, 255, 0.15)); }
-            75% { filter: brightness(1.3) drop-shadow(0 0 6px rgba(255, 255, 255, 0.35)); }
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
+            25% { filter: brightness(2.5) drop-shadow(0 0 20px rgba(255, 255, 255, 1)); }
+            50% { filter: brightness(0.5) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3)); }
+            75% { filter: brightness(2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.9)); }
           }
           .flashing-effect {
             animation: flashing 1s linear infinite;
@@ -221,7 +349,7 @@ export default function Home() {
             }
           }
           .dark-overlay {
-            animation: dark-overlay-fade 1.2s ease-out forwards;
+            animation: dark-overlay-fade 1.5s ease-out forwards;
           }
         `;
         document.head.appendChild(style);
@@ -311,27 +439,27 @@ export default function Home() {
       {/* Crash Modal */}
       {showCrashModal && (
         <div className='fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm modal-backdrop'>
-          <div className='relative bg-black border-2 border-[#ffda17] rounded-lg p-6 md:p-8 max-w-lg w-full mx-4 shadow-2xl modal-appear'>
+          <div className='relative bg-black/95 border border-gray-700/50 rounded-xl p-8 md:p-10 max-w-lg w-full mx-4 shadow-2xl modal-appear'>
             <button
               onClick={() => {
                 setShowCrashModal(false);
                 restorePagePosition();
               }}
-              className='absolute top-4 right-4 text-[#ffda17] hover:text-yellow-400 text-2xl font-bold transition-colors'
+              className='absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-light transition-colors w-8 h-8 flex items-center justify-center'
             >
               ×
             </button>
-            <div className='text-center space-y-4'>
-              <h2 className='text-2xl md:text-3xl font-bold text-[#ffda17] uppercase mb-4'>
-                You have just seen <br />{' '}
-                <span className='text-xl md:text-2xl '>
-                  how the old education system is collapsing.
+            <div className='text-center space-y-5'>
+              <h2 className='text-3xl md:text-4xl font-semibold text-white mb-8'>
+                😜 uh oh, <br />{' '}
+                <span className='text-2xl md:text-3xl text-gray-300'>
+                  Look what you made me do
                 </span>
               </h2>
-              <p className='text-[#fdfbb4] text-base md:text-lg leading-relaxed font-semibold'>
+              <p className='text-gray-300 text-base md:text-lg leading-relaxed font-normal max-w-md mx-auto'>
                 Would you like to see how we are going to build a new system together?
               </p>
-              <p className='text-[#ffda17] text-lg md:text-xl font-bold uppercase mt-6'>
+              <p className='text-white text-base md:text-lg font-medium mt-8 mb-2'>
                 Join the revolution. Leave your email below.
               </p>
               <form onSubmit={handleModalSubmit} className='mt-6 flex flex-col gap-3'>
@@ -342,27 +470,27 @@ export default function Home() {
                   placeholder='Enter your email'
                   required
                   disabled={isModalSubmitting}
-                  className={`px-4 py-2.5 bg-black/80 border-2 text-[#fdfbb4] placeholder-[#fdfbb4] 
-                    focus:outline-none focus:ring-2 focus:ring-[#ffda17] focus:ring-opacity-50
-                    transition-all duration-300 ease-in-out
+                  className={`px-4 py-3 bg-white/5 border border-gray-600/50 text-white placeholder-gray-500 
+                    focus:outline-none focus:ring-2 focus:ring-[#ffda17]/50 focus:border-[#ffda17]/50
+                    transition-all duration-300 ease-in-out rounded-lg
                     ${
                       isModalSubmitting
-                        ? 'border-yellow-600/30 opacity-50 cursor-not-allowed'
-                        : 'border-[#ffda17] hover:border-yellow-400 focus:border-yellow-400'
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:border-gray-500 focus:bg-white/10'
                     }`}
                 />
                 <button
                   type='submit'
                   disabled={isModalSubmitting}
-                  className={`px-8 py-2.5 font-bold uppercase cursor-pointer
+                  className={`px-8 py-3 font-semibold uppercase cursor-pointer rounded-lg
                     transition-all duration-300 ease-in-out
                     transform hover:scale-105 active:scale-95 
                     ${
                       isModalSubmitting
-                        ? 'bg-yellow-600/30 text-black/40 cursor-wait'
+                        ? 'bg-gray-700/50 text-gray-400 cursor-wait'
                         : !modalEmail
-                        ? 'bg-yellow-600/40 text-black/50 cursor-pointer'
-                        : 'bg-[#ffda17] text-black hover:bg-yellow-400 hover:shadow-lg hover:shadow-yellow-400/50 active:bg-yellow-500'
+                        ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed'
+                        : 'bg-[#ffda17] text-black hover:bg-[#ffed4e] hover:shadow-lg hover:shadow-[#ffda17]/30 active:bg-[#ffd700]'
                     }`}
                 >
                   {isModalSubmitting ? 'Joining...' : 'Join the Revolution'}
@@ -387,7 +515,7 @@ export default function Home() {
               onClick={handleWindowClick}
               onMouseEnter={() => setShowWindowTooltip(true)}
               onMouseLeave={() => setShowWindowTooltip(false)}
-              className={`${
+              className={`window-container ${
                 !isPageRestored ? 'window-flashing' : ''
               } absolute left-1/2 -translate-x-1/2 w-full md:max-w-[160px] max-w-[120px] h-1/2 cursor-pointer group`}
             >
@@ -420,7 +548,7 @@ export default function Home() {
             )}
           </div>
           {/* City image at the bottom - full width */}
-          <div className='absolute md:bottom-[-5vh] bottom-0 left-0 right-0 w-screen h-1/2'>
+          <div className='city-container absolute md:bottom-[-5vh] bottom-0 left-0 right-0 w-screen h-1/2'>
             <div className='relative h-full w-[150vw] left-1/2 -translate-x-1/2 md:w-full md:left-0 md:translate-x-0'>
               <Image
                 src='/images/city.png'
@@ -435,7 +563,7 @@ export default function Home() {
 
         {/* Content block centered */}
         <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-46  mb-24 md:mb-0'>
-          <div className='mb-5 flex flex-col items-center'>
+          <div className='title-container mb-5 flex flex-col items-center'>
             <span className='text-yellow-300 text-5xl font-bold tracking-wide drop-shadow-lg uppercase'>
               FLOWROOM
             </span>
@@ -444,7 +572,7 @@ export default function Home() {
             </span>
           </div>
           {/* Gallery */}
-          <div className='grid sm:grid-cols-4 grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-xl '>
+          <div className='gallery-container grid sm:grid-cols-4 grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-xl '>
             {items.map(item => {
               const isActive = activeItem === item.id;
 
@@ -520,7 +648,7 @@ export default function Home() {
           </div>
 
           {/* Email subscription form */}
-          <div className='mt-4 flex flex-col items-center gap-4'>
+          <div className='email-form-container mt-4 flex flex-col items-center gap-4'>
             <p className='text-[#ffda17] text-sm md:text-base lg:text-lg drop-shadow-lg text-center transition-opacity duration-300'>
               Let me know when the next flow session begins.
             </p>
