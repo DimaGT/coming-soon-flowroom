@@ -112,7 +112,7 @@ export default function EarlyAccessPage() {
         <div className='relative bg-black/95 border border-gray-700/50 rounded-xl p-8 md:p-10 max-w-xl w-full shadow-2xl'>
           {/* CTA Block */}
           <div className='mb-6'>
-            <p className='text-white text-base md:text-lg font-medium mb-2 text-center'>
+            <p className='text-white text-base md:text-2xl font-semibold mb-2 text-center'>
               Early Access
             </p>
             <p className='text-gray-300 text-sm md:text-base leading-relaxed text-center'>
