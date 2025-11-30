@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import SplashCursor from '../components/SplashCursor';
@@ -452,9 +453,7 @@ export default function Home() {
             <div className='text-center space-y-5'>
               <h2 className='text-3xl md:text-4xl font-semibold text-white mb-8'>
                 😜 uh oh, <br />{' '}
-                <span className='text-2xl md:text-3xl text-gray-300'>
-                  Look what you made me do
-                </span>
+                <span className='text-2xl md:text-3xl text-gray-300'>Look what you made me do</span>
               </h2>
               <p className='text-gray-300 text-base md:text-lg leading-relaxed font-normal max-w-md mx-auto'>
                 Would you like to see how we are going to build a new system together?
@@ -687,6 +686,12 @@ export default function Home() {
                 {isSubmitting ? 'Submitting...' : 'Notify Me'}
               </button>
             </form>
+            <Link
+              href='/early-access'
+              className='text-[#ffda17] text-xs md:text-sm hover:text-yellow-400 transition-colors duration-300 mt-2 underline underline-offset-2'
+            >
+              Early Access →
+            </Link>
           </div>
         </div>
       </div>
