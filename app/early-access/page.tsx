@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import SplashCursor from '../../components/SplashCursor';
 import { supabase } from '../../lib/supabase/client';
 
 export default function EarlyAccessPage() {
@@ -11,6 +12,9 @@ export default function EarlyAccessPage() {
   const [name, setName] = useState<string>('');
   const [role, setRole] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Memoize SplashCursor to prevent re-renders
+  const cursorComponent = useMemo(() => <SplashCursor />, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +70,8 @@ export default function EarlyAccessPage() {
 
   return (
     <div className='min-h-screen bg-black relative overflow-hidden'>
+      {cursorComponent}
+
       {/* City image at the bottom - full width */}
       <div className='absolute md:bottom-[-5vh] bottom-0 left-0 right-0 w-screen h-1/2 z-0'>
         <div className='relative h-full w-[150vw] left-1/2 -translate-x-1/2 md:w-full md:left-0 md:translate-x-0'>
