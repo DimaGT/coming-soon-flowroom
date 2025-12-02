@@ -29,6 +29,9 @@ export default function RootLayout({
         {children}
         <Toaster
           position='top-right'
+          containerStyle={{
+            padding: 0
+          }}
           toastOptions={{
             duration: 4000,
             style: {

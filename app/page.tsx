@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import toast, { Toast } from 'react-hot-toast';
 import SplashCursor from '../components/SplashCursor';
 import { supabase } from '../lib/supabase/client';
 
@@ -376,7 +376,7 @@ export default function Home() {
       if (error) {
         // If error is due to duplicate email, treat as success
         if (error.code === '23505') {
-          toast.success(
+          showLucyNotification(
             'You are already subscribed! We will notify you when the next session begins.'
           );
           setEmail('');
@@ -384,7 +384,7 @@ export default function Home() {
           toast.error('Something went wrong. Please try again later.');
         }
       } else {
-        toast.success('Thank you! We will notify you when the next flow session begins.');
+        showLucyNotification('Thank you! We will notify you when the next flow session begins.');
         setEmail('');
       }
     } catch (err) {
@@ -412,7 +412,7 @@ export default function Home() {
       if (error) {
         // If error is due to duplicate email, treat as success
         if (error.code === '23505') {
-          toast.success('You are already subscribed! Thank you for being a hero! ');
+          showLucyNotification('You are already subscribed! Thank you for being a hero! ');
           setModalEmail('');
           setShowCrashModal(false);
           restorePageAndFixWindow();
@@ -420,7 +420,7 @@ export default function Home() {
           toast.error('Something went wrong. Please try again later.');
         }
       } else {
-        toast.success('Thank you for saving the day!');
+        showLucyNotification('Thank you for saving the day!');
         setModalEmail('');
         setShowCrashModal(false);
         restorePageAndFixWindow();
@@ -430,6 +430,53 @@ export default function Home() {
     } finally {
       setIsModalSubmitting(false);
     }
+  };
+
+  // Custom notification with Lucy
+  const showLucyNotification = (message: string) => {
+    toast.custom(
+      (t: Toast) => (
+        <div
+          className={`${
+            t.visible ? 'animate-slide-in-right' : 'animate-slide-out-right'
+          } fixed bottom-0 right-6 z-[9999] flex items-end gap-0 transition-all duration-500 ease-out`}
+        >
+          {/* Speech bubble - positioned to the left of Lucy */}
+          <div className='relative mb-[140px] mr-[-10px] bg-black/95 border-2 border-[#ffda17] rounded-xl px-4 py-3 shadow-2xl max-w-xs z-10'>
+            <p className='text-[#ffda17] font-semibold text-sm md:text-base leading-relaxed'>
+              {message}
+            </p>
+            {/* Speech bubble tail pointing to Lucy - centered on right side, pointing right */}
+            <div className='absolute top-1/2 right-[-10px] -translate-y-1/2 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[10px] border-l-[#ffda17]'></div>
+            <div className='absolute top-1/2 right-[-8px] -translate-y-1/2 w-0 h-0 border-t-[9px] border-t-transparent border-b-[9px] border-b-transparent border-l-[9px] border-l-black/95'></div>
+            {/* Close button */}
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className='absolute -top-2 -right-2 text-[#ffda17] hover:text-[#ffed4e] transition-colors text-xl leading-none w-6 h-6 flex items-center justify-center rounded-full bg-black border border-[#ffda17] hover:bg-[#ffda17]/10'
+              aria-label='Close notification'
+            >
+              ×
+            </button>
+          </div>
+          {/* Lucy - larger, attached to bottom */}
+          <div className='relative mb-[-16px]' style={{ lineHeight: 0 }}>
+            <Image
+              src='/images/lucy-hi.png'
+              alt='Lucy'
+              width={180}
+              height={180}
+              className='object-contain object-bottom block'
+              style={{ display: 'block' }}
+              priority
+            />
+          </div>
+        </div>
+      ),
+      {
+        duration: 10000,
+        position: 'bottom-right'
+      }
+    );
   };
 
   // Memoize SplashCursor to prevent re-renders
