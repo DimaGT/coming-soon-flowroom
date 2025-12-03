@@ -733,6 +733,15 @@ export default function Home() {
                 {isSubmitting ? 'Submitting...' : 'Notify Me'}
               </button>
             </form>
+            <p className='text-[#ffda17] text-xs md:text-sm text-center mt-2'>
+              <a
+                href='mailto:info@flowroom.art'
+                className='text-[#ffda17] hover:text-yellow-400 transition-colors duration-300 underline underline-offset-2'
+              >
+                info@flowroom.art
+              </a>{' '}
+              for general inquiries
+            </p>
             <Link
               href='/early-access'
               className='text-[#ffda17] text-xs md:text-sm hover:text-yellow-400 transition-colors duration-300 mt-2 underline underline-offset-2'

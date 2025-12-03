@@ -276,6 +276,15 @@ export default function EarlyAccessPage() {
               {isSubmitting ? 'Submitting...' : 'Early Access'}
             </button>
           </form>
+          <p className='text-gray-400 text-xs md:text-sm text-center mt-4'>
+            <a
+              href='mailto:info@flowroom.art'
+              className='text-[#ffda17] hover:text-yellow-400 transition-colors duration-300 underline underline-offset-2'
+            >
+              info@flowroom.art
+            </a>{' '}
+            for general inquiries
+          </p>
         </div>
       </div>
     </div>
