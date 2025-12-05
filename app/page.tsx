@@ -6,11 +6,12 @@ import { useEffect, useMemo, useState } from 'react';
 import toast, { Toast } from 'react-hot-toast';
 import SplashCursor from '../components/SplashCursor';
 import { supabase } from '../lib/supabase/client';
+import { isValidEmail } from '../lib/utils/email';
 
 const items = [
   {
     id: 1,
-    text: 'A new way to see learning.',
+    text: 'A New Way of Learning.',
     hasActive: true
   },
   {
@@ -61,6 +62,7 @@ export default function Home() {
   const [isModalSubmitting, setIsModalSubmitting] = useState<boolean>(false);
   const [isPageRestored, setIsPageRestored] = useState<boolean>(false);
   const [isScreenDark, setIsScreenDark] = useState<boolean>(false);
+  const [showLucyBackdrop, setShowLucyBackdrop] = useState<boolean>(false);
 
   // Update last active text when activeItem changes
   useEffect(() => {
@@ -361,7 +363,8 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !email.includes('@')) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
       toast.error('Please enter a valid email address');
       return;
     }
@@ -397,7 +400,8 @@ export default function Home() {
   const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!modalEmail || !modalEmail.includes('@')) {
+    const trimmedEmail = modalEmail.trim();
+    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
       toast.error('Please enter a valid email address');
       return;
     }
@@ -434,44 +438,54 @@ export default function Home() {
 
   // Custom notification with Lucy
   const showLucyNotification = (message: string) => {
+    setShowLucyBackdrop(true);
     toast.custom(
-      (t: Toast) => (
-        <div
-          className={`${
-            t.visible ? 'animate-slide-in-right' : 'animate-slide-out-right'
-          } fixed bottom-0 right-6 z-[9999] flex items-end gap-0 transition-all duration-500 ease-out`}
-        >
-          {/* Speech bubble - positioned to the left of Lucy */}
-          <div className='relative mb-[140px] mr-[-10px] bg-black/95 border-2 border-[#ffda17] rounded-xl px-4 py-3 shadow-2xl max-w-xs z-10'>
-            <p className='text-[#ffda17] font-semibold text-sm md:text-base leading-relaxed'>
-              {message}
-            </p>
-            {/* Speech bubble tail pointing to Lucy - centered on right side, pointing right */}
-            <div className='absolute top-1/2 right-[-10px] -translate-y-1/2 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[10px] border-l-[#ffda17]'></div>
-            <div className='absolute top-1/2 right-[-8px] -translate-y-1/2 w-0 h-0 border-t-[9px] border-t-transparent border-b-[9px] border-b-transparent border-l-[9px] border-l-black/95'></div>
-            {/* Close button */}
-            <button
-              onClick={() => toast.dismiss(t.id)}
-              className='absolute -top-2 -right-2 text-[#ffda17] hover:text-[#ffed4e] transition-colors text-xl leading-none w-6 h-6 flex items-center justify-center rounded-full bg-black border border-[#ffda17] hover:bg-[#ffda17]/10'
-              aria-label='Close notification'
-            >
-              ×
-            </button>
+      (t: Toast) => {
+        // Update backdrop visibility based on toast visibility
+        if (t.visible) {
+          setShowLucyBackdrop(true);
+        } else {
+          setTimeout(() => setShowLucyBackdrop(false), 500);
+        }
+        return (
+          <div
+            className={`${
+              t.visible ? 'animate-slide-in-right' : 'animate-slide-out-right'
+            } fixed bottom-0 right-6 flex items-end gap-0 transition-all duration-500 ease-out`}
+            style={{ zIndex: 9999 }}
+          >
+            {/* Speech bubble - positioned to the left of Lucy */}
+            <div className='relative mb-[140px] mr-[-10px] bg-black/95 border-2 border-[#ffda17] rounded-xl px-4 py-3 shadow-2xl max-w-xs z-10'>
+              <p className='text-[#ffda17] font-semibold text-sm md:text-base leading-relaxed'>
+                {message}
+              </p>
+              {/* Speech bubble tail pointing to Lucy - centered on right side, pointing right */}
+              <div className='absolute top-1/2 right-[-10px] -translate-y-1/2 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[10px] border-l-[#ffda17]'></div>
+              <div className='absolute top-1/2 right-[-8px] -translate-y-1/2 w-0 h-0 border-t-[9px] border-t-transparent border-b-[9px] border-b-transparent border-l-[9px] border-l-black/95'></div>
+              {/* Close button */}
+              <button
+                onClick={() => toast.dismiss(t.id)}
+                className='absolute -top-2 -right-2 text-[#ffda17] hover:text-[#ffed4e] transition-colors text-xl leading-none w-6 h-6 flex items-center justify-center rounded-full bg-black border border-[#ffda17] hover:bg-[#ffda17]/10'
+                aria-label='Close notification'
+              >
+                ×
+              </button>
+            </div>
+            {/* Lucy - larger, attached to bottom */}
+            <div className='relative mb-[-16px]' style={{ lineHeight: 0 }}>
+              <Image
+                src='/images/lucy-hi.png'
+                alt='Lucy'
+                width={180}
+                height={180}
+                className='object-contain object-bottom block'
+                style={{ display: 'block' }}
+                priority
+              />
+            </div>
           </div>
-          {/* Lucy - larger, attached to bottom */}
-          <div className='relative mb-[-16px]' style={{ lineHeight: 0 }}>
-            <Image
-              src='/images/lucy-hi.png'
-              alt='Lucy'
-              width={180}
-              height={180}
-              className='object-contain object-bottom block'
-              style={{ display: 'block' }}
-              priority
-            />
-          </div>
-        </div>
-      ),
+        );
+      },
       {
         duration: 10000,
         position: 'bottom-right'
@@ -484,6 +498,17 @@ export default function Home() {
 
   return (
     <>
+      {/* Dimmed backdrop for Lucy notification - reduces distraction */}
+      {showLucyBackdrop && (
+        <div
+          className='fixed inset-0 bg-black/60 transition-opacity duration-500 pointer-events-auto'
+          style={{ zIndex: 9998 }}
+          onClick={() => {
+            setShowLucyBackdrop(false);
+            toast.dismiss();
+          }}
+        />
+      )}
       {/* Crash Modal */}
       {showCrashModal && (
         <div className='fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm modal-backdrop'>
@@ -685,8 +710,13 @@ export default function Home() {
               const activeItemData = items.find(item => item.id === activeItem);
               const displayText =
                 activeItemData && activeItemData.hasActive ? activeItemData.text : lastActiveText;
+              const isFirstItem = activeItem === 1;
               return (
-                <p className='font-bold text-lg md:text-base uppercase lg:text-2xl text-[#ffda17] drop-shadow-lg opacity-100'>
+                <p
+                  className={`font-bold text-lg md:text-base lg:text-2xl text-[#ffda17] drop-shadow-lg opacity-100 ${
+                    !isFirstItem ? 'uppercase' : ''
+                  }`}
+                >
                   {displayText}
                 </p>
               );
@@ -696,7 +726,7 @@ export default function Home() {
           {/* Email subscription form */}
           <div className='email-form-container mt-4 flex flex-col items-center gap-4'>
             <p className='text-[#ffda17] text-sm md:text-base lg:text-lg drop-shadow-lg text-center transition-opacity duration-300'>
-              Let me know when the next flow session begins.
+              I’d Like to Learn More.
             </p>
             <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-3 items-center'>
               <input

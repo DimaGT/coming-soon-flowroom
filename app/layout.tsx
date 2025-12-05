@@ -30,7 +30,8 @@ export default function RootLayout({
         <Toaster
           position='top-right'
           containerStyle={{
-            padding: 0
+            padding: 0,
+            zIndex: 9999
           }}
           toastOptions={{
             duration: 4000,
