@@ -64,6 +64,109 @@ export default function Home() {
   const [isScreenDark, setIsScreenDark] = useState<boolean>(false);
   const [showLucyBackdrop, setShowLucyBackdrop] = useState<boolean>(false);
 
+  const WINTER_PACK_PROMO_CODE = 'FLWRM- WNTR-26';
+
+  // Helper to send structured Winter Pack promo email
+  const sendWinterPackEmail = async (recipientEmail: string) => {
+    const to = recipientEmail.trim().toLowerCase();
+    if (!to || !isValidEmail(to)) return;
+
+    const subject = 'Welcome to Flowroom! Here is your Winter Pack access code.';
+
+    const text = `Hi There,
+
+Here is your personal promo code for complimentary access to the Flowroom Winter Pack – Class Flow edition on Teachers Pay Teachers:
+Promo code: ${WINTER_PACK_PROMO_CODE}
+Access link: https://www.teacherspayteachers.com/store/the-flowroom
+
+The Winter Pack includes:
+14+ black-and-white, print-ready pages
+line and shape practice
+simple SEL prompts
+short, focused activities designed to support attention and fine-motor control
+
+At Flowroom, we’re engineers and developers who are also teachers and parents. We’re building tools that help children practice how they use their attention in a world that is increasingly designed to fragment it.
+
+No subscriptions. No auto-renew. No fine print.
+We’ll only use your email to:
+- send you Flowroom resources as they become available, and
+- occasionally invite you to share feedback, if you’re willing.
+
+If you do try the Winter Pack, we’d be genuinely grateful for your thoughts. A quick note about what worked (or didn’t) helps us shape the next round of Class Flow sessions with real classrooms in mind.
+
+With appreciation,
+The Flowroom Team
+info@flowroom.art`;
+
+    const html = `
+      <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #111827;">
+        <p>Hi There,</p>
+
+        <p>
+          Here is your personal promo code for complimentary access to the
+          <strong>Flowroom Winter Pack – Class Flow edition</strong> on Teachers Pay Teachers:
+        </p>
+
+        <p style="padding: 12px 16px; background-color: #F9FAFB; border-radius: 8px; border: 1px solid #E5E7EB; display: inline-block;">
+          <strong>Promo code:</strong>
+          <span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; background:#111827; color:#F9FAFB; padding:4px 8px; border-radius:4px; margin-left:4px;">
+            ${WINTER_PACK_PROMO_CODE}
+          </span>
+          <br />
+          <strong>Access link:</strong>
+          <a href="https://www.teacherspayteachers.com/store/the-flowroom" style="color:#2563EB; text-decoration:underline;">
+            https://www.teacherspayteachers.com/store/the-flowroom
+          </a>
+        </p>
+
+        <h2 style="margin-top: 24px; margin-bottom: 8px; font-size: 16px;">The Winter Pack includes:</h2>
+        <ul style="margin: 0 0 16px 20px; padding: 0;">
+          <li>14+ black-and-white, print-ready pages</li>
+          <li>line and shape practice</li>
+          <li>simple SEL prompts</li>
+          <li>short, focused activities designed to support attention and fine-motor control</li>
+        </ul>
+
+        <p>
+          At Flowroom, we’re engineers and developers who are also teachers and parents.
+          We’re building tools that help children practice how they use their attention in a world
+          that is increasingly designed to fragment it.
+        </p>
+
+        <p><strong>No subscriptions. No auto-renew. No fine print.</strong></p>
+        <p>We’ll only use your email to:</p>
+        <ul style="margin: 0 0 16px 20px; padding: 0;">
+          <li>send you Flowroom resources as they become available, and</li>
+          <li>occasionally invite you to share feedback, if you’re willing.</li>
+        </ul>
+
+        <p>
+          If you do try the Winter Pack, we’d be genuinely grateful for your thoughts.
+          A quick note about what worked (or didn’t) helps us shape the next round of
+          Class Flow sessions with real classrooms in mind.
+        </p>
+
+        <p style="margin-top: 24px;">
+          With appreciation,<br />
+          <strong>The Flowroom Team</strong><br />
+          <a href="mailto:info@flowroom.art" style="color:#2563EB; text-decoration:underline;">info@flowroom.art</a>
+        </p>
+      </div>
+    `;
+
+    try {
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ to, subject, text, html })
+      });
+    } catch (error) {
+      console.error('Failed to send Winter Pack email (home page)', error);
+    }
+  };
+
   // Update last active text when activeItem changes
   useEffect(() => {
     const activeItemData = items.find(item => item.id === activeItem);
@@ -202,10 +305,10 @@ export default function Home() {
   const handleWindowClick = () => {
     let x = 0;
     const startTime = Date.now();
-    const duration = 5000; // Збільшена тривалість трясіння
-    const fadeStartTime = 3500; // Починаємо затемнювати через 3.5 секунди
+    const duration = 5000; // Increased shaking duration
+    const fadeStartTime = 3500; // Start darkening after 3.5 seconds
 
-    // Додаємо клас для миготіння
+    // Add class for flashing effect
     document.body.classList.add('flashing-effect');
 
     const mainContent = document.querySelector('.main-content') as HTMLElement;
@@ -216,31 +319,31 @@ export default function Home() {
     const titleElement = document.querySelector('.title-container') as HTMLElement;
     let fadeStarted = false;
 
-    // Отримуємо висоту екрану для опускання до низу
+    // Get screen height to move elements down
     const screenHeight = window.innerHeight;
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const progress = elapsed / duration; // 0 to 1
 
-      // Трясіння
+      // Shaking
       document.body.style.transform = `translate(${Math.sin(x) * 10}px, ${
         Math.cos(x) * 10
       }px) rotate(${Math.sin(x) * 4}deg)`;
-      x += 0.35; // пришвидшення
+      x += 0.35; // acceleration
 
-      // Анімація опускання вікон та міста (collapse effect) - повільніше, але до самого низу
-      const collapseProgress = Math.min(1, (elapsed - 1000) / 3500); // Починаємо через 1 секунду, повільніше (3.5 сек)
+      // Animation of moving windows and city down (collapse effect) - slower but to the very bottom
+      const collapseProgress = Math.min(1, (elapsed - 1000) / 3500); // Start after 1 second, slower (3.5 sec)
       if (collapseProgress > 0) {
-        // Використовуємо ease-out для більш природного падіння
+        // Use ease-out for more natural fall
         const easedProgress = 1 - Math.pow(1 - collapseProgress, 2);
-        // Опускаємо до самого низу екрану
-        const windowOffset = easedProgress * (screenHeight + 200); // За самий низ екрану
-        const cityOffset = easedProgress * (screenHeight * 0.8); // Трохи менше
-        const galleryOffset = easedProgress * (screenHeight * 0.6); // Менше
-        const formOffset = easedProgress * (screenHeight * 0.7); // Форма теж опускається
-        // Збільшуємо scale текстів паралельно з опусканням
-        const titleScale = 1 + easedProgress * 1.5; // Від 1 до 2.5
+        // Move elements down to the bottom of the screen
+        const windowOffset = easedProgress * (screenHeight + 200); // Below the bottom of the screen
+        const cityOffset = easedProgress * (screenHeight * 0.8); // Slightly less
+        const galleryOffset = easedProgress * (screenHeight * 0.6); // Less
+        const formOffset = easedProgress * (screenHeight * 0.7); // Form also moves down
+        // Increase title scale while moving elements down
+        const titleScale = 1 + easedProgress * 1.5; // From 1 to 2.5
 
         if (windowElement) {
           windowElement.style.transform = `translateY(${windowOffset}px)`;
@@ -264,12 +367,12 @@ export default function Home() {
         }
       }
 
-      // Починаємо затемнювати після fadeStartTime
+      // Start darkening after fadeStartTime
       if (elapsed >= fadeStartTime && !fadeStarted) {
         fadeStarted = true;
         setIsScreenDark(true);
         if (mainContent) {
-          // Встановлюємо transition один раз
+          // Set transition once
           mainContent.style.transition = 'opacity 1.5s ease-out';
           mainContent.style.opacity = '0';
         }
@@ -277,7 +380,7 @@ export default function Home() {
 
       if (elapsed >= duration) {
         clearInterval(interval);
-        // Залишаємо сторінку нахиленою, як після землетрусу
+        // Leave the page tilted as after an earthquake
         document.body.style.transform = 'translate(8px, 12px) rotate(6deg)';
         document.body.classList.remove('flashing-effect');
         // Через 2 секунди показуємо модалку
@@ -374,7 +477,7 @@ export default function Home() {
     try {
       const { error } = await supabase
         .from('email_subscriptions')
-        .insert([{ email: email.trim().toLowerCase() }]);
+        .insert([{ email: trimmedEmail.toLowerCase() }]);
 
       if (error) {
         // If error is due to duplicate email, treat as success
@@ -382,12 +485,16 @@ export default function Home() {
           showLucyNotification(
             'You are already subscribed! We will notify you when the next session begins.'
           );
+          // Best-effort: send / resend Winter Pack email for already subscribed users
+          await sendWinterPackEmail(trimmedEmail.toLowerCase());
           setEmail('');
         } else {
           toast.error('Something went wrong. Please try again later.');
         }
       } else {
         showLucyNotification('Thank you! We will notify you when the next flow session begins.');
+        // Send confirmation Winter Pack email
+        await sendWinterPackEmail(trimmedEmail.toLowerCase());
         setEmail('');
       }
     } catch (err) {
@@ -411,12 +518,14 @@ export default function Home() {
     try {
       const { error } = await supabase
         .from('email_subscriptions')
-        .insert([{ email: modalEmail.trim().toLowerCase() }]);
+        .insert([{ email: trimmedEmail.toLowerCase() }]);
 
       if (error) {
         // If error is due to duplicate email, treat as success
         if (error.code === '23505') {
           showLucyNotification('You are already subscribed! Thank you for being a hero! ');
+          // Best-effort: send / resend Winter Pack email for already subscribed users
+          await sendWinterPackEmail(trimmedEmail.toLowerCase());
           setModalEmail('');
           setShowCrashModal(false);
           restorePageAndFixWindow();
@@ -425,6 +534,8 @@ export default function Home() {
         }
       } else {
         showLucyNotification('Thank you for saving the day!');
+        // Send confirmation Winter Pack email
+        await sendWinterPackEmail(trimmedEmail.toLowerCase());
         setModalEmail('');
         setShowCrashModal(false);
         restorePageAndFixWindow();
@@ -575,7 +686,7 @@ export default function Home() {
       {isScreenDark && (
         <div className='fixed inset-0 bg-black z-[150] pointer-events-none dark-overlay'></div>
       )}
-      <div className='main-content relative md:h-screen w-full overflow-hidden bg-black py-4'>
+      <div className='main-content relative min-h-screen overflow-hidden w-full   bg-black py-4'>
         {cursorComponent}
 
         {/* Background images */}
@@ -588,7 +699,7 @@ export default function Home() {
               onMouseLeave={() => setShowWindowTooltip(false)}
               className={`window-container ${
                 !isPageRestored ? 'window-flashing' : ''
-              } absolute left-1/2 -translate-x-1/2 w-full md:max-w-[160px] max-w-[120px] h-1/2 cursor-pointer group`}
+              } absolute left-1/2 -translate-x-1/2 w-full md:max-w-[140px] max-w-[120px] h-1/2 cursor-pointer group`}
             >
               <Image
                 src='/images/window.png'
@@ -633,7 +744,7 @@ export default function Home() {
         </div>
 
         {/* Content block centered */}
-        <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-46  mb-24 md:mb-0'>
+        <div className='relative z-10 flex h-full flex-col items-center  px-4 mt-36 md:mt-40  mb-24 md:mb-0'>
           <div className='title-container mb-5 flex flex-col items-center'>
             <span className='text-yellow-300 text-5xl font-bold tracking-wide drop-shadow-lg uppercase'>
               FLOWROOM
@@ -643,7 +754,7 @@ export default function Home() {
             </span>
           </div>
           {/* Gallery */}
-          <div className='gallery-container grid sm:grid-cols-4 grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-xl '>
+          <div className='gallery-container grid sm:grid-cols-4 grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full max-w-lg '>
             {items.map(item => {
               const isActive = activeItem === item.id;
 
@@ -725,9 +836,12 @@ export default function Home() {
 
           {/* Email subscription form */}
           <div className='email-form-container mt-4 flex flex-col items-center gap-4'>
-            <p className='text-[#ffda17] text-sm md:text-base lg:text-lg drop-shadow-lg text-center transition-opacity duration-300'>
+            <span className='text-[#ffda17] text-sm md:text-base lg:text-lg drop-shadow-lg text-center transition-opacity duration-300'>
+              Neuro-art lesson packs that help kids practice focus in today’s distracted world.
+            </span>
+            {/* <p className='text-[#ffda17] text-sm md:text-base lg:text-lg drop-shadow-lg text-center transition-opacity duration-300'>
               I’d Like to Learn More.
-            </p>
+            </p> */}
             <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-3 items-center'>
               <input
                 type='email'
