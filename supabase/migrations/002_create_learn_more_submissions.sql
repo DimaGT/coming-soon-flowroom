@@ -52,6 +52,7 @@ ALTER TABLE public.learn_more_submissions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow public insert" ON public.learn_more_submissions;
 DROP POLICY IF EXISTS "Allow authenticated read" ON public.learn_more_submissions;
 DROP POLICY IF EXISTS "Allow authenticated update" ON public.learn_more_submissions;
+DROP POLICY IF EXISTS "Allow public update" ON public.learn_more_submissions;
 
 -- Create policy to allow anyone to insert submissions
 CREATE POLICY "Allow public insert" ON public.learn_more_submissions

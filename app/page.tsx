@@ -57,9 +57,7 @@ export default function Home() {
   const [email, setEmail] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showWindowTooltip, setShowWindowTooltip] = useState<boolean>(false);
-  const [showCrashModal, setShowCrashModal] = useState<boolean>(false);
-  const [modalEmail, setModalEmail] = useState<string>('');
-  const [isModalSubmitting, setIsModalSubmitting] = useState<boolean>(false);
+  const [showBrandMoment, setShowBrandMoment] = useState<boolean>(false);
   const [isPageRestored, setIsPageRestored] = useState<boolean>(false);
   const [isScreenDark, setIsScreenDark] = useState<boolean>(false);
   const [showLucyBackdrop, setShowLucyBackdrop] = useState<boolean>(false);
@@ -235,161 +233,24 @@ info@flowroom.art`;
     }, 800);
   };
 
-  // Restore page position and fix window (stop flashing)
-  const restorePageAndFixWindow = () => {
-    document.body.style.transition = 'transform 0.8s ease-out';
-    document.body.style.transform = '';
-    setIsScreenDark(false);
-    const mainContent = document.querySelector('.main-content') as HTMLElement;
-    const windowElement = document.querySelector('.window-container') as HTMLElement;
-    const cityElement = document.querySelector('.city-container') as HTMLElement;
-    const galleryElement = document.querySelector('.gallery-container') as HTMLElement;
-    const formElement = document.querySelector('.email-form-container') as HTMLElement;
-    const titleElement = document.querySelector('.title-container') as HTMLElement;
-
-    if (mainContent) {
-      mainContent.style.transition = 'opacity 0.8s ease-out';
-      mainContent.style.opacity = '1';
-    }
-    if (windowElement) {
-      windowElement.style.transition = 'transform 0.8s ease-out';
-      windowElement.style.transform = '';
-    }
-    if (cityElement) {
-      cityElement.style.transition = 'transform 0.8s ease-out';
-      cityElement.style.transform = '';
-    }
-    if (galleryElement) {
-      galleryElement.style.transition = 'transform 0.8s ease-out';
-      galleryElement.style.transform = '';
-    }
-    if (formElement) {
-      formElement.style.transition = 'transform 0.8s ease-out';
-      formElement.style.transform = '';
-    }
-    if (titleElement) {
-      titleElement.style.transition = 'transform 0.8s ease-out';
-      titleElement.style.transform = '';
-    }
-
-    setTimeout(() => {
-      document.body.style.transition = '';
-      if (mainContent) {
-        mainContent.style.transition = '';
-      }
-      if (windowElement) {
-        windowElement.style.transition = '';
-      }
-      if (cityElement) {
-        cityElement.style.transition = '';
-      }
-      if (galleryElement) {
-        galleryElement.style.transition = '';
-      }
-      if (formElement) {
-        formElement.style.transition = '';
-      }
-      if (titleElement) {
-        titleElement.style.transition = '';
-      }
-      setIsPageRestored(true);
-      // Remove flashing animation from window
-      const flashingWindow = document.querySelector('.window-flashing');
-      if (flashingWindow) {
-        flashingWindow.classList.remove('window-flashing');
-      }
-    }, 800);
-  };
-
-  // Handle window click - shake entire page with collapse effect
+  // Handle window click - fade out page and show brand moment
   const handleWindowClick = () => {
-    let x = 0;
-    const startTime = Date.now();
-    const duration = 5000; // Increased shaking duration
-    const fadeStartTime = 3500; // Start darkening after 3.5 seconds
-
-    // Add class for flashing effect
-    document.body.classList.add('flashing-effect');
-
     const mainContent = document.querySelector('.main-content') as HTMLElement;
-    const windowElement = document.querySelector('.window-container') as HTMLElement;
-    const cityElement = document.querySelector('.city-container') as HTMLElement;
-    const galleryElement = document.querySelector('.gallery-container') as HTMLElement;
-    const formElement = document.querySelector('.email-form-container') as HTMLElement;
-    const titleElement = document.querySelector('.title-container') as HTMLElement;
-    let fadeStarted = false;
 
-    // Get screen height to move elements down
-    const screenHeight = window.innerHeight;
+    // Start fading out the page
+    setIsScreenDark(true);
+    if (mainContent) {
+      mainContent.style.transition = 'opacity 2s ease-out';
+      mainContent.style.opacity = '0';
+    }
 
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const progress = elapsed / duration; // 0 to 1
-
-      // Shaking
-      document.body.style.transform = `translate(${Math.sin(x) * 10}px, ${
-        Math.cos(x) * 10
-      }px) rotate(${Math.sin(x) * 4}deg)`;
-      x += 0.35; // acceleration
-
-      // Animation of moving windows and city down (collapse effect) - slower but to the very bottom
-      const collapseProgress = Math.min(1, (elapsed - 1000) / 3500); // Start after 1 second, slower (3.5 sec)
-      if (collapseProgress > 0) {
-        // Use ease-out for more natural fall
-        const easedProgress = 1 - Math.pow(1 - collapseProgress, 2);
-        // Move elements down to the bottom of the screen
-        const windowOffset = easedProgress * (screenHeight + 200); // Below the bottom of the screen
-        const cityOffset = easedProgress * (screenHeight * 0.8); // Slightly less
-        const galleryOffset = easedProgress * (screenHeight * 0.6); // Less
-        const formOffset = easedProgress * (screenHeight * 0.7); // Form also moves down
-        // Increase title scale while moving elements down
-        const titleScale = 1 + easedProgress * 1.5; // From 1 to 2.5
-
-        if (windowElement) {
-          windowElement.style.transform = `translateY(${windowOffset}px)`;
-          windowElement.style.transition = 'transform 0.1s linear';
-        }
-        if (cityElement) {
-          cityElement.style.transform = `translateY(${cityOffset}px)`;
-          cityElement.style.transition = 'transform 0.1s linear';
-        }
-        if (galleryElement) {
-          galleryElement.style.transform = `translateY(${galleryOffset}px)`;
-          galleryElement.style.transition = 'transform 0.1s linear';
-        }
-        if (formElement) {
-          formElement.style.transform = `translateY(${formOffset}px)`;
-          formElement.style.transition = 'transform 0.1s linear';
-        }
-        if (titleElement) {
-          titleElement.style.transform = `scale(${titleScale})`;
-          titleElement.style.transition = 'transform 0.1s linear';
-        }
-      }
-
-      // Start darkening after fadeStartTime
-      if (elapsed >= fadeStartTime && !fadeStarted) {
-        fadeStarted = true;
-        setIsScreenDark(true);
-        if (mainContent) {
-          // Set transition once
-          mainContent.style.transition = 'opacity 1.5s ease-out';
-          mainContent.style.opacity = '0';
-        }
-      }
-
-      if (elapsed >= duration) {
-        clearInterval(interval);
-        // Leave the page tilted as after an earthquake
-        document.body.style.transform = 'translate(8px, 12px) rotate(6deg)';
-        document.body.classList.remove('flashing-effect');
-        // Через 2 секунди показуємо модалку
-        setTimeout(() => {
-          setShowCrashModal(true);
-        }, 2000);
-        return;
-      }
-    }, 30); // пришвидшення
+    // Show brand moment text after fade completes and a few seconds
+    setTimeout(() => {
+      // Show brand moment text after a few seconds
+      setTimeout(() => {
+        setShowBrandMoment(true);
+      }, 3000); // Show text 3 seconds after screen goes black
+    }, 2000); // Wait for fade to complete (2 seconds)
   };
 
   // Додаємо стилі для ефекту миготіння
@@ -504,47 +365,13 @@ info@flowroom.art`;
     }
   };
 
-  const handleModalSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle back to page button click
+  const handleBackToPage = () => {
+    // Hide brand moment modal
+    setShowBrandMoment(false);
 
-    const trimmedEmail = modalEmail.trim();
-    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    setIsModalSubmitting(true);
-
-    try {
-      const { error } = await supabase
-        .from('email_subscriptions')
-        .insert([{ email: trimmedEmail.toLowerCase() }]);
-
-      if (error) {
-        // If error is due to duplicate email, treat as success
-        if (error.code === '23505') {
-          showLucyNotification('You are already subscribed! Thank you for being a hero! ');
-          // Best-effort: send / resend Winter Pack email for already subscribed users
-          await sendWinterPackEmail(trimmedEmail.toLowerCase());
-          setModalEmail('');
-          setShowCrashModal(false);
-          restorePageAndFixWindow();
-        } else {
-          toast.error('Something went wrong. Please try again later.');
-        }
-      } else {
-        showLucyNotification('Thank you for saving the day!');
-        // Send confirmation Winter Pack email
-        await sendWinterPackEmail(trimmedEmail.toLowerCase());
-        setModalEmail('');
-        setShowCrashModal(false);
-        restorePageAndFixWindow();
-      }
-    } catch (err) {
-      toast.error('Something went wrong. Please try again later.');
-    } finally {
-      setIsModalSubmitting(false);
-    }
+    // Restore page
+    restorePagePosition();
   };
 
   // Custom notification with Lucy
@@ -620,64 +447,26 @@ info@flowroom.art`;
           }}
         />
       )}
-      {/* Crash Modal */}
-      {showCrashModal && (
-        <div className='fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm modal-backdrop'>
-          <div className='relative bg-black/95 border border-gray-700/50 rounded-xl p-8 md:p-10 max-w-lg w-full mx-4 shadow-2xl modal-appear'>
-            <button
-              onClick={() => {
-                setShowCrashModal(false);
-                restorePagePosition();
-              }}
-              className='absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-light transition-colors w-8 h-8 flex items-center justify-center'
-            >
-              ×
-            </button>
-            <div className='text-center space-y-5'>
-              <h2 className='text-3xl md:text-4xl font-semibold text-white mb-8'>
-                😜 uh oh, <br />{' '}
-                <span className='text-2xl md:text-3xl text-gray-300'>Look what you made me do</span>
-              </h2>
-              <p className='text-gray-300 text-base md:text-lg leading-relaxed font-normal max-w-md mx-auto'>
-                Would you like to see how we are going to build a new system together?
+      {/* Brand Moment Modal */}
+      {showBrandMoment && (
+        <div className='fixed inset-0 z-[200] flex items-center justify-center bg-black modal-backdrop'>
+          <div className='relative bg-black/95 border border-gray-700/50 rounded-xl p-8 md:p-10 max-w-2xl w-full mx-4 shadow-2xl modal-appear'>
+            <div className='text-center space-y-6'>
+              <p className='text-white text-base md:text-lg leading-relaxed font-normal max-w-xl mx-auto'>
+                What you're hearing is a low-complexity instrumental soundscape built around a
+                stable tempo and repetitive rhythmic patterns. This structure is designed to support
+                neural activity in the upper-alpha and low-beta bands within frontal–parietal
+                attention networks. These are states associated with calm, alert focus.
               </p>
-              <p className='text-white text-base md:text-lg font-medium mt-8 mb-2'>
-                Join the revolution. Leave your email below.
-              </p>
-              <form onSubmit={handleModalSubmit} className='mt-6 flex flex-col gap-3'>
-                <input
-                  type='email'
-                  value={modalEmail}
-                  onChange={e => setModalEmail(e.target.value)}
-                  placeholder='Enter your email'
-                  required
-                  disabled={isModalSubmitting}
-                  className={`px-4 py-3 bg-white/5 border border-gray-600/50 text-white placeholder-gray-500 
-                    focus:outline-none focus:ring-2 focus:ring-[#ffda17]/50 focus:border-[#ffda17]/50
-                    transition-all duration-300 ease-in-out rounded-lg
-                    ${
-                      isModalSubmitting
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'hover:border-gray-500 focus:bg-white/10'
-                    }`}
-                />
-                <button
-                  type='submit'
-                  disabled={isModalSubmitting}
-                  className={`px-8 py-3 font-semibold uppercase cursor-pointer rounded-lg
-                    transition-all duration-300 ease-in-out
-                    transform hover:scale-105 active:scale-95 
-                    ${
-                      isModalSubmitting
-                        ? 'bg-gray-700/50 text-gray-400 cursor-wait'
-                        : !modalEmail
-                        ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed'
-                        : 'bg-[#ffda17] text-black hover:bg-[#ffed4e] hover:shadow-lg hover:shadow-[#ffda17]/30 active:bg-[#ffd700]'
-                    }`}
-                >
-                  {isModalSubmitting ? 'Joining...' : 'Join the Revolution'}
-                </button>
-              </form>
+              <button
+                onClick={handleBackToPage}
+                className='px-8 py-3 font-semibold uppercase cursor-pointer rounded-lg
+                  transition-all duration-300 ease-in-out
+                  transform hover:scale-105 active:scale-95 
+                  bg-[#ffda17] text-black hover:bg-[#ffed4e] hover:shadow-lg hover:shadow-[#ffda17]/30 active:bg-[#ffd700]'
+              >
+                Back to the page
+              </button>
             </div>
           </div>
         </div>
